@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>.</title>
+<style>
+  :root { box-sizing: border-box; background: #000; }
+  html, body { height: 100%; margin: 0; background: #000; overflow: hidden; cursor: none; }
+  #dot { position: fixed; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px;
+    border-radius: 50%; background: #222; animation: breathe 2s infinite; }
+  @keyframes breathe { 50% { opacity: .1; } }
+  #flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  #flash.go { animation: fl .35s steps(2) 3; }
+  @keyframes fl { 0%,100% { opacity: 0; } 50% { opacity: 1; } }
+  #scene { position: fixed; inset: 0; display: none; flex-direction: column;
+    align-items: center; justify-content: center; background: radial-gradient(circle, #5a0000 0%, #000 70%); }
+  #scene.show { display: flex; animation: shk .12s infinite; }
+  @keyframes shk { 0% { transform: translate(0,0); } 25% { transform: translate(-6px,4px); }
+    50% { transform: translate(5px,-5px); } 75% { transform: translate(-4px,-3px); } 100% { transform: translate(0,0); } }
+  #emo { font-size: min(65vw, 55vh); line-height: 1; animation: pop .3s ease-out;
+    filter: drop-shadow(0 0 30px #f00) drop-shadow(0 0 80px #f00);
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; }
+  @keyframes pop { from { transform: scale(.1) rotate(-30deg); } to { transform: scale(1) rotate(0); } }
+  #txt { margin-top: 2vh; padding: 0 16px; text-align: center; color: #ff2a2a; font: 800 min(9vw, 44px) Tahoma, Arial, sans-serif;
+    text-shadow: 0 0 12px #f00; animation: blink .5s infinite; }
+  @keyframes blink { 50% { opacity: .35; } }
+</style>
+</head>
+<body>
+<div id="dot"></div>
+<div id="flash"></div>
+<div id="scene"><div id="emo">🖕🏿</div><div id="txt">كنت مستني إيه؟ 😂</div></div>
+<script>
+  function beep() {
+    try {
+      var c = new (window.AudioContext || window.webkitAudioContext)();
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = 'sawtooth'; o.frequency.value = 90;
+      o.frequency.exponentialRampToValueAtTime(900, c.currentTime + .25);
+      g.gain.value = .6; g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .6);
+      o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + .6);
+    } catch (x) {}
+  }
+  setTimeout(function () {
+    document.getElementById('dot').style.display = 'none';
+    document.getElementById('flash').classList.add('go');
+    beep();
+    setTimeout(function () {
+      document.getElementById('scene').classList.add('show');
+      try { if (navigator.vibrate) navigator.vibrate([200, 80, 300]); } catch (x) {}
+    }, 350);
+  }, 5000 + Math.random() * 4000);
+</script>
+</body>
+</html>
